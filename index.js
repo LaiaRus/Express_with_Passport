@@ -188,6 +188,9 @@ app.get('/login',
   }
 )
 
+// It works for both the JWT and GitHub authentication methods
+// session.destroy is to remove the GitHub session
+// .clearCookie() is used to remove the JWT stored in the cookie
 app.get('/logout',
   (req, res) => {
     req.session.destroy(function (err) {
