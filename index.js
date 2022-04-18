@@ -97,7 +97,7 @@ passport.use('jwt', new JwtStrategy(jwtOptions, (jwtPayload, done) => {
  * PASSPORT FOR GITHUB
  */
 
- passport.use(new gitHubStrategy({
+passport.use(new gitHubStrategy({
   clientID: GITHUB_CLIENT_ID,
   clientSecret: GITHUB_CLIENT_SECRET,
   callbackURL: 'https://10.0.2.5/logingithub/callback'
@@ -121,8 +121,17 @@ passport.deserializeUser(function (user, done) {
  * GENERAL AUTHENTICATION FUNCTIONS
  */
 
- function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated() || req.cookies['cookie_access_token']) { return next(); }
+// It verifies the good authentication for both methods.
+// isAuthenticated() for github auth
+// jwtVerified for jwt auth
+function ensureAuthenticated(req, res, next) {
+  var jwtVerified = null
+  try {
+    var jwtVerified = jwt.verify(req.cookies['cookie_access_token'], jwtSecret);
+  } catch (err) {
+    jwtVerified = false
+  }
+  if (req.isAuthenticated() || jwtVerified) { return next(); }
   res.redirect('/login')
 }
 
