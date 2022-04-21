@@ -28,11 +28,11 @@ const GITHUB_CLIENT_ID = secretConfig.GITHUB_ID
 const GITHUB_CLIENT_SECRET = secretConfig.GITHUB_SECRET
 
 const cookieExtractor = req => {
-  let jwt = null
+  let jwtCookie = null
   if (req && req.cookies) {
-    jwt = req.cookies['cookie_access_token']
+    jwtCookie = req.cookies['cookie_access_token']
   }
-  return jwt
+  return jwtCookie
 }
 
 var passwordsJSON = {}
@@ -103,7 +103,7 @@ passport.use(new gitHubStrategy({
   callbackURL: 'https://10.0.2.5/logingithub/callback'
 },
   function (accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
+    process.nextTick(function () {     
       return done(null, profile)
     })
   }))
@@ -131,7 +131,7 @@ function ensureAuthenticated(req, res, next) {
   } catch (err) {
     jwtVerified = false
   }
-  if (req.isAuthenticated() || jwtVerified) { return next(); }
+  if (jwtVerified) { return next(); }
   res.redirect('/login')
 }
 
@@ -189,6 +189,11 @@ async function validateUserPasswd(_username, _plainPasswd) {
 
 app.get('/', ensureAuthenticated, (req, res) => {
   res.send(fortune.fortune())
+  // let decodedJWT = jwt.verify(req.cookies['cookie_access_token'], jwtSecret)
+  // let username = decodedJWT.sub
+  // res.json({
+  //   username: username
+  // })
 })
 
 app.get('/login',
@@ -221,7 +226,24 @@ app.get('/logingithub',
 app.get('/logingithub/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
   function (req, res) {
-    res//.redirect('/')
+    // This is what ends up in our JWT
+    const jwtClaims = {
+      sub: req.user.username,
+      iss: 'localhost:3000',
+      aud: 'localhost:3000',
+      exp: Math.floor(Date.now() / 1000) + 604800, // 1 week (7×24×60×60=604800s) from now
+      role: 'user' // just to show a private JWT field
+    }
+
+    // generate a signed json web token. By default the signing algorithm is HS256 (HMAC-SHA256), i.e. we will 'sign' with a symmetric secret
+    const token = jwt.sign(jwtClaims, jwtSecret)
+
+    // Just for testing, send the JWT directly to the browser. Later on we should send the token inside a cookie.
+    //res.json(token)
+
+    res
+      .cookie("cookie_access_token", token) 
+      //.redirect('/')
       .json({ message: "Logged in successfully!" });
   }
 );
@@ -255,7 +277,7 @@ app.post('/login',
     res
       .cookie("cookie_access_token", token) // cookie_access_token = name of the cookie
       .status(200)
-      .json({ message: "Logged in successfully!" });
+      .json({ message: 'Logged in successfully!' });
 
     // And let us log a link to the jwt.iot debugger, for easy checking/verifying:
     console.log(`Token sent. Debug at https://jwt.io/?value=${token}`)
