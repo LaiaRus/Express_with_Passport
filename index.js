@@ -86,10 +86,6 @@ passport.use('local', new LocalStrategy(
 ))
 
 passport.use('jwt', new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-  const { expiration } = jwtPayload
-  if (Date.now() > expiration) {
-    done('Token expired', false) // en realitat aixo no cal
-  }
   done(null, jwtPayload)
 }))
 
