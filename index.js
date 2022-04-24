@@ -47,7 +47,11 @@ app.use(bodyParser.urlencoded({ extended: true })) // needed to retrieve html fo
 app.use(bodyParser.json()) // github
 app.use(cookieParser())
 app.use(logger('dev'))
-app.use(session({ secret: 'example secret', resave: false, saveUninitialized: false }))
+app.use(session({ 
+  secret: 'example secret', 
+  resave: false, 
+  saveUninitialized: false, 
+  }))
 app.use(passport.initialize()) // we load the passport auth middleware to our express application. It should be loaded before any route.
 app.use(passport.session())
 
@@ -114,24 +118,6 @@ passport.deserializeUser(function (user, done) {
 });
 
 /**
- * GENERAL AUTHENTICATION FUNCTIONS
- */
-
-// It verifies the good authentication for both methods.
-// isAuthenticated() for github auth
-// jwtVerified for jwt auth
-function ensureAuthenticated(req, res, next) {
-  var jwtVerified = null
-  try {
-    var jwtVerified = jwt.verify(req.cookies['cookie_access_token'], jwtSecret);
-  } catch (err) {
-    jwtVerified = false
-  }
-  if (jwtVerified) { return next(); }
-  res.redirect('/login')
-}
-
-/**
  * JWT AUTHENTICATION FUNCTIONS
  */
 
@@ -183,13 +169,14 @@ async function validateUserPasswd(_username, _plainPasswd) {
  * GET ENDPOINTS
  */
 
-app.get('/', ensureAuthenticated, (req, res) => {
-  res.send(fortune.fortune())
+app.get('/', passport.authenticate('jwt', {failureRedirect: '/login'}), 
+function(req,res) {
   // let decodedJWT = jwt.verify(req.cookies['cookie_access_token'], jwtSecret)
   // let username = decodedJWT.sub
   // res.json({
   //   username: username
   // })
+  res.send(fortune.fortune())
 })
 
 app.get('/login',
