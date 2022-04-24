@@ -225,7 +225,7 @@ app.get('/logingithub/callback',
     //res.json(token)
 
     res
-      .cookie("cookie_access_token", token) 
+      .cookie("cookie_access_token", token, {httpOnly: true, secure: true}) 
       //.redirect('/')
       .json({ message: "Logged in successfully!" });
   }
@@ -258,7 +258,7 @@ app.post('/login',
     //res.json(token)
 
     res
-      .cookie("cookie_access_token", token) // cookie_access_token = name of the cookie
+      .cookie("cookie_access_token", token, {httpOnly: true, secure: true}) // cookie_access_token = name of the cookie
       .status(200)
       .json({ message: 'Logged in successfully!' });
 
