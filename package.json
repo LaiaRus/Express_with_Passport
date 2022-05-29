@@ -13,15 +13,20 @@
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.17.3",
+    "express-session": "^1.17.3",
     "fortune-teller": "^0.1.2",
     "fs": "^0.0.1-security",
+    "google.js": "0.0.2",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "passport": "^0.5.2",
     "passport-github2": "^0.1.12",
+    "passport-google-oidc": "^0.1.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "radclient": "^1.0.0",
     "scrypt-kdf": "^2.0.1",
     "scrypt-pbkdf": "^1.0.7"
-  }
+  },
+  "devDependencies": {}
 }

@@ -22,7 +22,24 @@
             <input type="submit" value="Log In" />
         </div>
     </form>
+    <br></br>
     <a href="/logingithub">Login with GitHub</a>
+    <br></br>
+    <a href="/logingoogle">Login with Google</a>
+    <br></br>
+    <form action="/loginradius" method="post">  <!-- when the formulary is submitted, it will be POSTed to /login-->
+        <div>
+            <label>RADIUS Username:</label>
+            <input type="text" name="rUsername" />
+        </div>
+        <div>
+            <label>RADIUS Password:</label>
+            <input type="password" name="rPassword" />
+        </div>
+        <div>
+            <input type="submit" value="Log In" />
+        </div>
+    </form>
 </body>
 
 </html>
